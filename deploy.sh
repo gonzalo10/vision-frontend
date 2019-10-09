@@ -14,7 +14,7 @@ if [[ $TRAVIS_BRANCH == $STAGING_BRANCH ]]; then
   NODE_ENV="staging"
   CLOUDFRONT_DIST_ID=$CLOUDFRONT_DIST_ID_STAGING
   # TODO: Change this to the command that builds your app for staging
-  yarn build:staging
+  yarn build
 elif [[ $TRAVIS_BRANCH == $PRODUCTION_BRANCH ]]; then
   NODE_ENV="production"
   CLOUDFRONT_DIST_ID=$CLOUDFRONT_DIST_ID_PRODUCTION
