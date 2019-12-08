@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Card = styled.div`
   cursor: pointer;
@@ -12,7 +12,7 @@ export const Card = styled.div`
   border-radius: 8px;
   border: 1px solid lightgray;
   transition-property: color, background-color, box-shadow, transform;
-  transition-duration: 0.15s;
+  transition-duration: 0.5s;
   &:hover {
     box-shadow: -1px 7px 24px -6px rgba(0, 0, 0, 0.43);
   }
@@ -30,7 +30,7 @@ export const ShadowCard = styled.div`
   box-shadow: -1px 7px 24px -6px rgba(0, 0, 0, 0.43);
   border: 1px solid lightgray;
 `;
-export const PlainCard = styled.div`
+export const FlatCard = styled.div`
   cursor: pointer;
   margin: 15px;
   position: relative;
@@ -41,12 +41,14 @@ export const PlainCard = styled.div`
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid lightgray;
+  cursor: default;
 `;
 
-export const CardMenu = styled.div`
+export const GridMenuArea = styled.div`
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(${props => props.cols || 4}, 1fr);
+  grid-template-rows: 1fr 1fr 1fr;
   height: 85vh;
   overflow: scroll;
 `;

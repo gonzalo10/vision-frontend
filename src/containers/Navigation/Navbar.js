@@ -1,10 +1,10 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
+import React from "react";
+import { connect } from "react-redux";
+import styled from "styled-components";
 
-import { history } from '../../helpers';
-import { userActions } from '../../_actions';
-import Logo from '../../assets/images/vision.svg';
+import { history } from "../../helpers";
+import { userActions } from "../../_actions";
+import Logo from "../../assets/images/logoWhite.svg";
 
 const Header = styled.div`
   color: ${props => props.theme.fontsPrimaryColor};
@@ -24,11 +24,12 @@ const Img = styled.img`
 const Brand = styled.h1`
 	font-size: 20px
 	color: ${props => props.theme.white};
-	font-weight: 900;
+  font-weight: 900;
 `;
 const BrandProfile = styled.div`
   display: flex;
   align-items: center;
+  cursor: pointer;
 `;
 const Menu = styled.div`
   display: flex;
@@ -45,22 +46,22 @@ const Item = styled.h1`
 const Navbar = ({ url }) => {
   return (
     <Header url={url}>
-      <BrandProfile>
+      <BrandProfile onClick={() => history.push("/")}>
         <Img src={Logo} />
         <Brand>Vision</Brand>
       </BrandProfile>
       <Menu>
-        <Item onClick={() => history.push('/login')}>Log in</Item>
-        <Item onClick={() => history.push('/signup')}>Sign up</Item>
+        <Item onClick={() => history.push("/login")}>Log in</Item>
+        <Item onClick={() => history.push("/signup")}>Sign up</Item>
       </Menu>
     </Header>
   );
 };
 
 function mapStateToProps(state) {
-  const user = 'Gonzalo';
+  const user = "Gonzalo";
   return {
-    user,
+    user
   };
 }
 

@@ -1,27 +1,30 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Notifications } from '../../utils/Notifications';
-import Navbar from '../Navigation';
+import { Notifications } from "../../utils/Notifications";
+import { Modal } from "../../utils/Modal/Modal.js";
+import Navbar from "../Navigation";
+import { Sidebar } from "./Sidebar";
 
 class Layout extends Component {
   render() {
     const { history, dispatch } = this.props;
     let url = history.location.pathname;
-
-    if (url === '/login' || url === '/dashboard' || url.includes('/model/')) {
+    const pages = ["/", "/login", "/signup"];
+    if (pages.includes(url)) {
       return (
-        <React.Fragment>
+        <>
+          <Navbar history={history} dispatch={dispatch} url={url} />
           <Notifications />
-          <main>{this.props.children}</main>
-        </React.Fragment>
+          {this.props.children}
+        </>
       );
     }
-
     return (
       <>
-        <Navbar history={history} dispatch={dispatch} url={url} />
+        <Sidebar url={url} />
         <Notifications />
-        {this.props.children}
+        <Modal />
+        <main>{this.props.children}</main>
       </>
     );
   }

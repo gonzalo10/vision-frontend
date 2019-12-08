@@ -1,63 +1,152 @@
-import axios from "axios";
-
-import { authHeader } from "../helpers";
+import { client } from "../index";
+import { gql } from "apollo-boost";
+import { API, backendURL } from "./helpers";
+import { store } from "../helpers";
+import { object } from "prop-types";
 
 const login = async (username, password) => {
   try {
+    //   const {
+    //     data: { login: result },
+    //   } = await client.query(
+    //     {
+    //       query: gql`
+    //         query login(username: $String, password: $String) {
+    //           login(email: $username, password: $password) {
+    //             userId
+    //             token
+    //             tokenExpiration
+    //             error
+    //           }
+    //         }
+    //       `,
+    //     },
+    //     { variables: { username, password } }
+    //   );
+
+    //   const { data: { login: result } } = await client.query({
+    //     query: UserQuery
+    //  });
+
+    //   if (result.error) {
+    //     throw new Error(result.error);
+    //   }
+    //   return result;
     const requestBody = {
       query: `
-			 {
-				login(email: "${username}", password: "${password}") {
-				userId
-				token
-				tokenExpiration
-				error
-				}
-			  }
-			`
+      {
+        login(email: "${username}", password: "${password}") {
+          userId
+          token
+          tokenExpiration
+          error
+        }
+      }
+      `
     };
-    const response = await axios({
-      url: "http://localhost:3000/graphql",
+    const response = await fetch(backendURL + "/graphql", {
       method: "POST",
-      data: requestBody
+      body: JSON.stringify(requestBody),
+      headers: { "Content-Type": "application/json" }
     });
-    // const response = await fetch('http://localhost:3000/graphql', {
-    // 	method: 'POST',
-    // 	body: JSON.stringify(requestBody),
-    // 	headers: {
-    // 		'Content-Type': 'application/json',
-    // 	},
-    // 	credentials: 'same-origin',
-    // });
-    const {
-      data: { login: result }
-    } = await response.data;
-    if (result.error) {
-      return Promise.reject(result.error);
-    }
-    return result;
+    const text = await response.text();
+    const data = text && JSON.parse(text);
+    return data.data;
   } catch (err) {
     console.log(err);
   }
 };
 
-function register(username, password) {
+function register(username, password, plan) {
   const requestBody = {
     query: `
-		mutation {
-			createUser(userInput: {email: "${username}", password: "${password}"}) {
-			  id
-			  email
-			  password
-			}
-		  }
-        `
+	  mutation{
+      createUser(userInput:{email: "${username}", password: "${password}", plan: ${plan}}) {
+       id
+      }
+    }
+    `
   };
-  return fetch("http://localhost:3000/graphql", {
+  return fetch(backendURL + "/graphql", {
     method: "POST",
     body: JSON.stringify(requestBody),
-    headers: authHeader()
+    headers: { "Content-Type": "application/json" }
   }).then(response => handleResponse(response));
+}
+function getUserAccount() {
+  const requestBody = {
+    query: `
+		query {
+			getAccount {
+        user {
+          email
+          modelsUsage
+          requestsUsage
+          createdAt
+          userTypeId
+        }
+        userType {
+          name
+          price
+          models
+          modelRow
+          requests
+        }
+			}
+		  }
+    `
+  };
+  return API(requestBody);
+}
+
+function getUser() {
+  const requestBody = {
+    query: `
+		query {
+			getUser {
+        email
+        userTypeId
+			}
+		}
+    `
+  };
+  return API(requestBody);
+}
+
+function getAllUsers() {
+  const requestBody = {
+    query: `
+		{
+			getAllUsers {
+        
+          email
+          modelsUsage
+          requestsUsage
+          createdAt
+          userTypeId
+          createdAt
+        
+			}
+		}
+    `
+  };
+  return API(requestBody);
+}
+
+function handleResponse(response) {
+  return response.text().then(text => {
+    const data = text && JSON.parse(text);
+    if (!response.ok) {
+      if (response.status === 401) {
+        store.dispatch(logout());
+        window.location.reload(true);
+      }
+      const error = (data && data.message) || response.statusText;
+      return Promise.reject(error);
+    }
+    console.log({ ...data });
+    return data;
+  });
 }
 
 function logout() {
@@ -67,28 +156,13 @@ function logout() {
   localStorage.removeItem("refresh_token");
 }
 
-function handleResponse(response) {
-  return response.text().then(text => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      if (response.status === 401) {
-        console.log("error 401");
-        // auto logout if 401 response returned from api
-        logout();
-        window.location.reload(true);
-      }
-
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
-}
 export const userService = {
   login,
   logout,
-  register
+  register,
+  getUserAccount,
+  getAllUsers,
+  getUser
   // getAll,
   // getById,
   // update,

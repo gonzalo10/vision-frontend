@@ -1,12 +1,12 @@
-import { notificationsConstants } from '../constants';
-import { store } from '../helpers/store';
+import { notificationsConstants } from "../constants";
+import { store } from "../helpers/store";
 
 export const notificationsActions = {
   success,
   error,
   info,
   warning,
-  clear,
+  clear
 };
 
 const waitAndClear = () => {
